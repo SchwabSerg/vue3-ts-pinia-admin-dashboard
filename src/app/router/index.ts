@@ -1,6 +1,56 @@
-import { createRouter, createWebHistory, type RouteRecordRaw, type Router } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw,
+  type Router,
+} from 'vue-router';
+import { defineComponent, h } from 'vue';
 
-const routes: RouteRecordRaw[] = [];
+const LoginPage = defineComponent({
+  render: () => h('div', 'Page placeholder'),
+});
+
+const OrdersPage = defineComponent({
+  render: () => h('div', 'Page placeholder'),
+});
+
+const CustomersPage = defineComponent({
+  render: () => h('div', 'Page placeholder'),
+});
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    redirect: '/orders',
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginPage,
+    meta: {
+      requiresAuth: false,
+      title: 'Login',
+    },
+  },
+  {
+    path: '/orders',
+    name: 'orders',
+    component: OrdersPage,
+    meta: {
+      requiresAuth: true,
+      title: 'Orders',
+    },
+  },
+  {
+    path: '/customers',
+    name: 'customers',
+    component: CustomersPage,
+    meta: {
+      requiresAuth: true,
+      title: 'Customers',
+    },
+  },
+];
 
 const router: Router = createRouter({
   history: createWebHistory(),

@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { useUiStore } from '@/shared/stores/ui.store';
-
-interface AuthStoreLike {
-  user: {
-    name: string;
-  } | null;
-  logout: () => void;
-}
 
 const route = useRoute();
 const uiStore = useUiStore();
-const authStore = ref<AuthStoreLike | null>(null);
+const authStore = useAuthStore();
 
 const pageTitle = computed<string>(() => {
   const title: unknown = route.meta.title;
@@ -20,20 +14,11 @@ const pageTitle = computed<string>(() => {
   return typeof title === 'string' && title.length > 0 ? title : 'Dashboard';
 });
 
-const userName = computed<string>(() => authStore.value?.user?.name ?? 'Guest');
+const userName = computed<string>(() => authStore.user?.name ?? 'Guest');
 
 const handleLogout = (): void => {
-  authStore.value?.logout();
+  authStore.logout();
 };
-
-onMounted(async (): Promise<void> => {
-  try {
-    const authModule = await import('@/modules/auth/store/auth.store');
-    authStore.value = authModule.useAuthStore();
-  } catch {
-    authStore.value = null;
-  }
-});
 </script>
 
 <template>
