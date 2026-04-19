@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import OrderStatusBadge from '@/modules/orders/components/OrderStatusBadge.vue';
 import { useOrdersStore } from '@/modules/orders/store/orders.store';
+import BaseButton from '@/shared/components/ui/BaseButton.vue';
 import type { Order } from '@/modules/orders/domain/order.types';
 import { usePagination } from '@/shared/composables/usePagination';
 import { formatDate } from '@/shared/utils/formatDate';
@@ -85,305 +86,109 @@ const retry = async (): Promise<void> => {
 </script>
 
 <template>
-  <section class="orders-table">
-    <div class="orders-table__header">
-      <div>
-        <p class="orders-table__eyebrow">Orders</p>
-        <h2 class="orders-table__title">Recent activity</h2>
-      </div>
-      <p class="orders-table__count">{{ total }} total orders</p>
+  <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white">
+    <div v-if="loading === 'error' && error" class="flex flex-col items-center justify-center gap-2 p-12">
+      <div class="text-2xl">⚠️</div>
+      <div class="text-[13px] font-medium text-slate-900">{{ error.message }}</div>
+      <BaseButton variant="ghost" size="sm" @click="retry">Try again</BaseButton>
     </div>
 
-    <div v-if="loading === 'error' && error" class="orders-table__state orders-table__state--error">
-      <div class="orders-table__state-icon">!</div>
-      <h3>Unable to load orders</h3>
-      <p>{{ error.message }}</p>
-      <button class="orders-table__retry" type="button" @click="retry">Retry</button>
-    </div>
-
-    <div
-      v-else-if="loading === 'loading'"
-      class="orders-table__skeleton"
-      aria-label="Loading orders"
-    >
-      <div v-for="index in 5" :key="index" class="orders-table__skeleton-row">
-        <span v-for="cell in 6" :key="cell" class="orders-table__skeleton-cell" />
-      </div>
-    </div>
-
-    <div v-else-if="orders.length === 0" class="orders-table__state orders-table__state--empty">
-      <div class="orders-table__state-icon">⊘</div>
-      <h3>No orders found</h3>
-      <p>Try adjusting your search or status filters.</p>
-    </div>
-
-    <div v-else class="orders-table__content">
-      <table class="orders-table__table">
-        <thead>
+    <div v-else-if="loading === 'loading'">
+      <table class="w-full border-collapse">
+        <thead class="border-b border-slate-200 bg-slate-50">
           <tr>
-            <th>
-              <button class="orders-table__sort" type="button" @click="emit('sort', 'orderNumber')">
-                Order #
-                <span>{{ sortIndicator('orderNumber') }}</span>
-              </button>
-            </th>
-            <th>
-              <button class="orders-table__sort" type="button" @click="emit('sort', 'customer')">
-                Customer
-                <span>{{ sortIndicator('customer') }}</span>
-              </button>
-            </th>
-            <th>Status</th>
-            <th>
-              <button class="orders-table__sort" type="button" @click="emit('sort', 'amount')">
-                Amount
-                <span>{{ sortIndicator('amount') }}</span>
-              </button>
-            </th>
-            <th>
-              <button class="orders-table__sort" type="button" @click="emit('sort', 'createdAt')">
-                Date
-                <span>{{ sortIndicator('createdAt') }}</span>
-              </button>
-            </th>
-            <th>Actions</th>
+            <th v-for="col in ['Order #', 'Customer', 'Status', 'Amount', 'Date', '']" :key="col" class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">{{ col }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="order in orders" :key="order.id">
-            <td class="orders-table__mono">{{ order.orderNumber }}</td>
-            <td>
-              <div class="orders-table__customer">
-                <strong>{{ order.customer.name }}</strong>
-                <span>{{ order.customer.email }}</span>
-              </div>
-            </td>
-            <td>
-              <OrderStatusBadge :status="order.status" />
-            </td>
-            <td>${{ order.payment.amount.toFixed(2) }}</td>
-            <td>{{ formatDate(order.createdAt) }}</td>
-            <td>
-              <button class="orders-table__view" type="button" @click="viewOrder(order.id)">View</button>
+          <tr v-for="i in 8" :key="i">
+            <td v-for="col in ['Order #', 'Customer', 'Status', 'Amount', 'Date', '']" :key="col" class="border-b border-slate-100 px-3.5 py-2.5">
+              <div class="h-3.5 w-[70%] rounded bg-slate-100 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
 
-      <div class="orders-table__pagination">
-        <div class="orders-table__pagination-group">
-          <label for="orders-per-page">Rows</label>
-          <select
-            id="orders-per-page"
+    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center gap-2 p-12">
+      <div class="text-2xl opacity-30">📭</div>
+      <div class="text-[13px] font-medium text-slate-900">No orders found</div>
+      <div class="text-xs text-slate-400">Try adjusting your search or filters</div>
+    </div>
+
+    <table v-else class="w-full border-collapse">
+      <thead class="border-b border-slate-200 bg-slate-50">
+          <tr>
+            <th @click="emit('sort', 'orderNumber')" class="cursor-pointer whitespace-nowrap px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">
+                Order #
+            </th>
+            <th @click="emit('sort', 'customer')" class="cursor-pointer px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">
+                Customer
+            </th>
+            <th class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">Status</th>
+            <th @click="emit('sort', 'amount')" class="cursor-pointer whitespace-nowrap px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">
+                Amount
+            </th>
+            <th @click="emit('sort', 'createdAt')" class="cursor-pointer px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">
+                Date
+            </th>
+            <th class="px-3.5 py-2"></th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr
+            v-for="order in orders"
+            :key="order.id"
+            class="border-b border-slate-100"
+          >
+            <td class="px-3.5 py-[9px]">
+              <span class="font-mono text-xs text-slate-600">{{ order.orderNumber }}</span>
+            </td>
+            <td class="px-3.5 py-[9px]">
+              <div>
+                <div class="text-[13px] font-medium text-slate-900">{{ order.customer.name }}</div>
+                <div class="mt-px text-[11px] text-slate-400">{{ order.customer.email }}</div>
+              </div>
+            </td>
+            <td class="px-3.5 py-[9px]">
+              <OrderStatusBadge :status="order.status" />
+            </td>
+            <td class="px-3.5 py-[9px]">
+              <span class="text-[13px] font-medium text-slate-900">${{ order.payment.amount.toFixed(2) }}</span>
+            </td>
+            <td class="px-3.5 py-[9px]">
+              <span class="text-xs text-slate-500">{{ formatDate(order.createdAt) }}</span>
+            </td>
+            <td class="px-3.5 py-[9px]">
+              <button @click="viewOrder(order.id)" class="h-[26px] cursor-pointer rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-600">View</button>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <div class="flex items-center justify-between border-t border-slate-100 px-3.5 py-2.5">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-400">Page {{ pagination.page.value }} of {{ totalPages }} · {{ total }} results</span>
+        <select
             v-model.number="pagination.perPage.value"
-            class="orders-table__per-page"
+            class="h-7 cursor-pointer rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-600"
           >
             <option :value="10">10</option>
             <option :value="20">20</option>
             <option :value="50">50</option>
           </select>
-        </div>
-
-        <div class="orders-table__pagination-group">
-          <button
-            class="orders-table__pagination-button"
-            type="button"
-            :disabled="pagination.page.value <= 1"
-            @click="pagination.setPage(pagination.page.value - 1)"
-          >
-            Previous
-          </button>
-          <span>Page {{ pagination.page.value }} of {{ totalPages }}</span>
-          <button
-            class="orders-table__pagination-button"
-            type="button"
-            :disabled="pagination.page.value >= totalPages"
-            @click="pagination.setPage(pagination.page.value + 1)"
-          >
-            Next
-          </button>
-        </div>
+      </div>
+      <div class="flex gap-1">
+        <button :disabled="pagination.page.value <= 1" @click="pagination.setPage(pagination.page.value - 1)" class="h-7 cursor-pointer rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-600 disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
+        <button :disabled="pagination.page.value >= totalPages" @click="pagination.setPage(pagination.page.value + 1)" class="h-7 cursor-pointer rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-600 disabled:cursor-not-allowed disabled:opacity-40">Next</button>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <style scoped>
-.orders-table {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 1rem;
-}
-
-.orders-table__header,
-.orders-table__pagination,
-.orders-table__pagination-group {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.orders-table__eyebrow {
-  margin: 0 0 0.3rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-primary, #3b82f6);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.orders-table__title,
-.orders-table__count {
-  margin: 0;
-  color: var(--color-text, #1e293b);
-}
-
-.orders-table__count {
-  color: var(--color-text-muted, #64748b);
-}
-
-.orders-table__table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.orders-table__table th,
-.orders-table__table td {
-  padding: 0.95rem 0.75rem;
-  border-bottom: 1px solid var(--color-border, #e2e8f0);
-  text-align: left;
-  vertical-align: middle;
-}
-
-.orders-table__table th {
-  color: var(--color-text-muted, #64748b);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.orders-table__sort {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.orders-table__customer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.orders-table__customer span {
-  color: var(--color-text-muted, #64748b);
-  font-size: 0.875rem;
-}
-
-.orders-table__mono {
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
-  font-weight: 700;
-}
-
-.orders-table__view,
-.orders-table__retry,
-.orders-table__pagination-button,
-.orders-table__per-page {
-  min-height: 2.5rem;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 0.75rem;
-  background: #fff;
-  color: var(--color-text, #1e293b);
-  font: inherit;
-}
-
-.orders-table__view,
-.orders-table__retry,
-.orders-table__pagination-button {
-  cursor: pointer;
-}
-
-.orders-table__state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  min-height: 20rem;
-  border-radius: 1rem;
-  text-align: center;
-}
-
-.orders-table__state--empty {
-  background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
-  color: var(--color-text-muted, #64748b);
-}
-
-.orders-table__state--error {
-  background: #fef2f2;
-  color: #b91c1c;
-}
-
-.orders-table__state-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 70%);
-  font-size: 1.5rem;
-  font-weight: 800;
-}
-
-.orders-table__skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.orders-table__skeleton-row {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr 0.8fr 0.8fr 0.9fr 0.6fr;
-  gap: 0.75rem;
-}
-
-.orders-table__skeleton-cell {
-  height: 3rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(90deg, #e2e8f0 0%, #f8fafc 50%, #e2e8f0 100%);
-  background-size: 200% 100%;
-  animation: pulse 1.2s ease-in-out infinite;
-}
-
 @keyframes pulse {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-@media (max-width: 900px) {
-  .orders-table__content {
-    overflow-x: auto;
-  }
-
-  .orders-table__pagination {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 </style>

@@ -15,38 +15,57 @@ defineProps<Props>();
 </script>
 
 <template>
-  <div class="customer-orders-list">
-    <div v-if="loading === 'loading'" class="customer-orders-list__skeleton">
-      <div v-for="index in 4" :key="index" class="customer-orders-list__skeleton-row">
-        <span v-for="cell in 4" :key="cell" class="customer-orders-list__skeleton-cell" />
-      </div>
+  <div class="overflow-hidden rounded-[10px] border border-slate-200 bg-white">
+    <div v-if="loading === 'loading'">
+      <table class="w-full border-collapse">
+        <thead class="border-b border-slate-200 bg-slate-50">
+          <tr>
+            <th v-for="col in ['Order #','Status','Amount','Date']" :key="col" class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">{{ col }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="i in 4" :key="i">
+            <td v-for="col in 4" :key="col" class="border-b border-slate-100 px-3.5 py-2.5">
+              <div class="h-[13px] w-[65%] rounded bg-slate-100 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div v-else-if="orders.length === 0" class="customer-orders-list__empty">
-      No orders yet
+    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center gap-1.5 p-8">
+      <div class="text-[13px] font-medium text-slate-900">No orders yet</div>
+      <div class="text-xs text-slate-400">This customer has no orders</div>
     </div>
 
-    <table v-else class="customer-orders-list__table">
-      <thead>
+    <table v-else class="w-full border-collapse">
+      <thead class="border-b border-slate-200 bg-slate-50">
         <tr>
-          <th>Order #</th>
-          <th>Status</th>
-          <th>Amount</th>
-          <th>Date</th>
+          <th class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">Order #</th>
+          <th class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">Status</th>
+          <th class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">Amount</th>
+          <th class="px-3.5 py-2 text-left text-[11px] font-medium uppercase tracking-[0.04em] text-slate-500">Date</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="order in orders" :key="order.id">
-          <td>
-            <RouterLink class="customer-orders-list__link" :to="`/orders/${order.id}`">
+        <tr
+          v-for="order in orders"
+          :key="order.id"
+          class="border-b border-slate-100"
+        >
+          <td class="px-3.5 py-[9px] font-mono text-xs text-slate-600">
+            <RouterLink
+              class="text-slate-600 no-underline"
+              :to="`/orders/${order.id}`"
+            >
               {{ order.orderNumber }}
             </RouterLink>
           </td>
-          <td>
+          <td class="px-3.5 py-[9px]">
             <OrderStatusBadge :status="order.status" />
           </td>
-          <td>{{ order.payment.currency }} {{ order.payment.amount.toFixed(2) }}</td>
-          <td>{{ formatDate(order.createdAt) }}</td>
+          <td class="px-3.5 py-[9px] text-[13px] font-medium text-slate-900">${{ order.payment.amount.toFixed(2) }}</td>
+          <td class="px-3.5 py-[9px] text-xs text-slate-500">{{ formatDate(order.createdAt) }}</td>
         </tr>
       </tbody>
     </table>
@@ -54,68 +73,5 @@ defineProps<Props>();
 </template>
 
 <style scoped>
-.customer-orders-list__table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.customer-orders-list__table th,
-.customer-orders-list__table td {
-  padding: 0.9rem 0.75rem;
-  border-bottom: 1px solid var(--color-border, #e2e8f0);
-  text-align: left;
-}
-
-.customer-orders-list__table th {
-  color: var(--color-text-muted, #64748b);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.customer-orders-list__link {
-  color: var(--color-primary, #3b82f6);
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.customer-orders-list__link:hover {
-  text-decoration: underline;
-}
-
-.customer-orders-list__empty {
-  padding: 2rem 1rem;
-  text-align: center;
-  color: var(--color-text-muted, #64748b);
-}
-
-.customer-orders-list__skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.customer-orders-list__skeleton-row {
-  display: grid;
-  grid-template-columns: 1fr 0.8fr 0.8fr 0.9fr;
-  gap: 0.75rem;
-}
-
-.customer-orders-list__skeleton-cell {
-  height: 2.75rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(90deg, #e2e8f0 0%, #f8fafc 50%, #e2e8f0 100%);
-  background-size: 200% 100%;
-  animation: pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 </style>

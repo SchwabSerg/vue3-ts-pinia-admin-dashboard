@@ -52,153 +52,59 @@ const totalSpentFormatted = computed<string>(() => {
 </script>
 
 <template>
-  <div class="customer-view">
-    <BaseButton variant="ghost" @click="goBack">Back to orders</BaseButton>
+  <div>
+    <button
+      @click="goBack"
+      class="mb-4 inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-500"
+    >← Back to orders</button>
 
-    <div v-if="customersStore.loading === 'loading'" class="customer-view__state">
-      <BaseSpinner size="lg" color="var(--color-primary, #3b82f6)" />
-      <p>Loading customer details...</p>
+    <div v-if="customersStore.loading === 'loading'" class="flex items-center justify-center p-12">
+      <div class="spinner h-6 w-6 rounded-full border-2 border-slate-200 border-t-blue-500"></div>
     </div>
 
-    <div v-else-if="customersStore.error" class="customer-view__error">
-      <ErrorMessage
-        :message="customersStore.error.message"
-        :retryable="true"
-        @retry="retryLoad"
-      />
-      <BaseButton variant="secondary" @click="goBack">Back</BaseButton>
+    <div v-else-if="customersStore.error" class="flex flex-col items-center justify-center gap-2 p-12">
+      <div class="text-[13px] font-medium text-slate-900">Customer not found</div>
+      <div class="text-xs text-slate-400">{{ customersStore.error.message }}</div>
     </div>
 
     <template v-else-if="customersStore.currentCustomer">
-      <section class="customer-view__card">
-        <div class="customer-view__header">
-          <div>
-            <p class="customer-view__eyebrow">Customer profile</p>
-            <h1 class="customer-view__title">{{ customersStore.currentCustomer.name }}</h1>
+      <div class="mb-4 overflow-hidden rounded-[10px] border border-slate-200 bg-white">
+        <div class="flex items-center gap-3.5 p-4">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[15px] font-semibold text-blue-800">
+            {{ customersStore.currentCustomer.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0,2) }}
           </div>
-          <BaseBadge :variant="statusVariant">
-            {{ customersStore.currentCustomer.status }}
-          </BaseBadge>
+          <div>
+            <div class="text-[15px] font-semibold text-slate-900">{{ customersStore.currentCustomer.name }}</div>
+            <div class="mt-0.5 text-xs text-slate-500">{{ customersStore.currentCustomer.email }}</div>
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <BaseBadge :variant="statusVariant">{{ customersStore.currentCustomer.status }}</BaseBadge>
+            <span class="text-xs text-slate-400">Since {{ formatDate(customersStore.currentCustomer.registeredAt) }}</span>
+          </div>
         </div>
+        <div class="grid grid-cols-1 gap-2.5 px-4 pb-4 md:grid-cols-3">
+          <div class="rounded-lg border border-slate-100 bg-slate-50 p-3">
+            <div class="text-lg font-semibold text-slate-900">{{ customersStore.currentCustomer.totalOrders }}</div>
+            <div class="mt-0.5 text-[11px] text-slate-400">Total orders</div>
+          </div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 p-3">
+            <div class="text-lg font-semibold text-slate-900">{{ totalSpentFormatted }}</div>
+            <div class="mt-0.5 text-[11px] text-slate-400">Total spent</div>
+          </div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 p-3">
+            <div class="text-[13px] font-semibold text-slate-900">{{ customersStore.currentCustomer.phone }}</div>
+            <div class="mt-0.5 text-[11px] text-slate-400">Phone</div>
+          </div>
+        </div>
+      </div>
 
-        <div class="customer-view__grid">
-          <div>
-            <h2>Email</h2>
-            <p>{{ customersStore.currentCustomer.email }}</p>
-          </div>
-          <div>
-            <h2>Phone</h2>
-            <p>{{ customersStore.currentCustomer.phone }}</p>
-          </div>
-          <div>
-            <h2>Registered</h2>
-            <p>{{ formatDate(customersStore.currentCustomer.registeredAt) }}</p>
-          </div>
-          <div>
-            <h2>Total orders</h2>
-            <p>{{ customersStore.currentCustomer.totalOrders }}</p>
-          </div>
-          <div>
-            <h2>Total spent</h2>
-            <p>{{ totalSpentFormatted }}</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="customer-view__card">
-        <div class="customer-view__section-header">
-          <h2>Orders by this customer</h2>
-        </div>
-        <CustomerOrdersList
-          :orders="customersStore.customerOrders"
-          :loading="customersStore.ordersLoading"
-        />
-      </section>
+      <div class="mb-2.5 text-[13px] font-semibold text-slate-900">Orders by this customer</div>
+      <CustomerOrdersList :orders="customersStore.customerOrders" :loading="customersStore.ordersLoading" />
     </template>
   </div>
 </template>
 
 <style scoped>
-.customer-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.customer-view__state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 18rem;
-  gap: 0.75rem;
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 1rem;
-  color: var(--color-text-muted, #64748b);
-  text-align: center;
-}
-
-.customer-view__error {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.customer-view__card {
-  padding: 1.25rem;
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 1rem;
-}
-
-.customer-view__header,
-.customer-view__section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.customer-view__eyebrow {
-  margin: 0 0 0.35rem;
-  color: var(--color-primary, #3b82f6);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.customer-view__title,
-.customer-view__section-header h2 {
-  margin: 0;
-  color: var(--color-text, #1e293b);
-}
-
-.customer-view__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.customer-view__grid h2 {
-  margin: 0 0 0.25rem;
-  color: var(--color-text-muted, #64748b);
-  font-size: 0.8125rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.customer-view__grid p {
-  margin: 0;
-  color: var(--color-text, #1e293b);
-  font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .customer-view__grid {
-    grid-template-columns: 1fr;
-  }
-}
+.spinner { animation: spin 0.75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

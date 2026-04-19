@@ -26,8 +26,11 @@ const handleSort = async (field: string): Promise<void> => {
 </script>
 
 <template>
-  <div class="orders-view">
-    <OrderFilters />
+  <div>
+    <div class="mb-4 flex items-center justify-between">
+      <OrderFilters />
+      <span class="text-xs text-slate-400">{{ ordersStore.total }} orders</span>
+    </div>
     <ErrorMessage
       v-if="ordersStore.loading === 'error' && ordersStore.error"
       :message="ordersStore.error.message"
@@ -48,11 +51,3 @@ const handleSort = async (field: string): Promise<void> => {
     />
   </div>
 </template>
-
-<style scoped>
-.orders-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-</style>

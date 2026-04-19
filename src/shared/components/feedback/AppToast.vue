@@ -14,22 +14,45 @@ const toastIcons: Record<'success' | 'error' | 'info', string> = {
 </script>
 
 <template>
-  <div class="app-toast" aria-live="polite" aria-atomic="true">
-    <TransitionGroup name="toast-list" tag="div" class="app-toast__list">
+  <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2" aria-live="polite" aria-atomic="true">
+    <TransitionGroup
+      tag="div"
+      class="flex flex-col gap-2"
+      enter-active-class="transition-all duration-150"
+      leave-active-class="transition-all duration-150"
+      move-class="transition-all duration-150"
+      enter-from-class="translate-y-2 opacity-0"
+      leave-to-class="translate-y-2 opacity-0"
+    >
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        class="app-toast__item"
-        :class="`app-toast__item--${toast.type}`"
+        class="flex min-w-[320px] max-w-[380px] items-start gap-3 rounded-xl border bg-white px-4 py-3.5 text-sm text-slate-800 shadow-sm"
+        :class="{
+          'border-green-200': toast.type === 'success',
+          'border-red-200': toast.type === 'error',
+          'border-blue-200': toast.type === 'info',
+        }"
       >
-        <span class="app-toast__icon" aria-hidden="true">
+        <span
+          class="mt-0.5 text-sm"
+          :class="{
+            'text-green-600': toast.type === 'success',
+            'text-red-600': toast.type === 'error',
+            'text-blue-600': toast.type === 'info',
+          }"
+          aria-hidden="true"
+        >
           {{ toastIcons[toast.type] }}
         </span>
-        <span class="app-toast__message">
-          {{ toast.message }}
-        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+            {{ toast.type }}
+          </p>
+          <p class="mt-1 text-sm leading-5 text-slate-700">{{ toast.message }}</p>
+        </div>
         <button
-          class="app-toast__close"
+          class="ml-auto cursor-pointer text-slate-400 transition-colors duration-150 hover:text-slate-600"
           type="button"
           aria-label="Close toast"
           @click="removeToast(toast.id)"
@@ -40,105 +63,3 @@ const toastIcons: Record<'success' | 'error' | 'info', string> = {
     </TransitionGroup>
   </div>
 </template>
-
-<style scoped>
-.app-toast {
-  position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  z-index: 1200;
-  pointer-events: none;
-}
-
-.app-toast__list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.app-toast__item {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 18rem;
-  max-width: 24rem;
-  padding: 0.875rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 1rem;
-  background: var(--color-surface, #fff);
-  box-shadow: 0 16px 40px rgb(15 23 42 / 12%);
-  pointer-events: auto;
-}
-
-.app-toast__item--success {
-  border-color: #86efac;
-  color: #166534;
-}
-
-.app-toast__item--error {
-  border-color: #fca5a5;
-  color: #991b1b;
-}
-
-.app-toast__item--info {
-  border-color: #93c5fd;
-  color: #1d4ed8;
-}
-
-.app-toast__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 70%);
-  font-weight: 700;
-}
-
-.app-toast__message {
-  color: inherit;
-  font-size: 0.9375rem;
-  line-height: 1.4;
-}
-
-.app-toast__close {
-  border: 0;
-  background: transparent;
-  color: currentColor;
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-.app-toast__close:hover {
-  opacity: 1;
-}
-
-.toast-list-enter-active,
-.toast-list-leave-active,
-.toast-list-move {
-  transition: all 0.22s ease;
-}
-
-.toast-list-enter-from,
-.toast-list-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-@media (max-width: 640px) {
-  .app-toast {
-    right: 1rem;
-    bottom: 1rem;
-    left: 1rem;
-  }
-
-  .app-toast__item {
-    min-width: 0;
-    max-width: none;
-  }
-}
-</style>

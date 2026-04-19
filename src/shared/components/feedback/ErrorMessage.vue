@@ -16,51 +16,14 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="error-message" role="alert">
-    <div class="error-message__icon">⚠</div>
-    <p class="error-message__title">Something went wrong</p>
-    <p class="error-message__text">{{ message }}</p>
-    <BaseButton v-if="retryable" variant="ghost" @click="$emit('retry')">Try again</BaseButton>
+  <div class="flex flex-col items-center justify-center gap-3 rounded-lg border border-red-100 bg-white px-4 py-12 text-center shadow-sm" role="alert">
+    <div class="flex h-11 w-11 items-center justify-center rounded-full bg-red-50 text-2xl">⚠️</div>
+    <div class="space-y-1">
+      <p class="text-sm font-semibold text-slate-800">Something went wrong</p>
+      <p class="max-w-sm text-sm leading-6 text-slate-500">{{ message }}</p>
+    </div>
+    <BaseButton v-if="retryable" variant="ghost" size="sm" @click="$emit('retry')">
+      Try again
+    </BaseButton>
   </div>
 </template>
-
-<style scoped>
-.error-message {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  min-height: 16rem;
-  padding: 2rem;
-  border: 1px solid #fecaca;
-  border-radius: 1rem;
-  background: #fff7f7;
-  text-align: center;
-}
-
-.error-message__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 999px;
-  background: #fee2e2;
-  color: #b91c1c;
-  font-size: 1.5rem;
-}
-
-.error-message__title {
-  margin: 0;
-  color: var(--color-text, #1e293b);
-  font-size: 1.125rem;
-  font-weight: 700;
-}
-
-.error-message__text {
-  margin: 0;
-  max-width: 28rem;
-  color: var(--color-text-muted, #64748b);
-}
-</style>

@@ -1,59 +1,34 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 interface Props {
   variant?: 'warning' | 'info' | 'primary' | 'success' | 'danger' | 'default';
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
+});
+
+const variantClass = computed<string>(() => {
+  switch (props.variant) {
+    case 'success':
+      return 'bg-green-100 text-green-700';
+    case 'warning':
+      return 'bg-amber-100 text-amber-700';
+    case 'danger':
+      return 'bg-red-100 text-red-700';
+    case 'info':
+      return 'bg-blue-100 text-blue-700';
+    case 'primary':
+      return 'bg-violet-100 text-violet-700';
+    default:
+      return 'bg-slate-100 text-slate-600';
+  }
 });
 </script>
 
 <template>
-  <span class="base-badge" :class="`base-badge--${variant}`">
+  <span class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium" :class="variantClass">
     <slot />
   </span>
 </template>
-
-<style scoped>
-.base-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 1.5rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.base-badge--default {
-  background: #e2e8f0;
-  color: #475569;
-}
-
-.base-badge--warning {
-  background: #fef3c7;
-  color: #b45309;
-}
-
-.base-badge--info {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
-.base-badge--primary {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.base-badge--success {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.base-badge--danger {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-</style>

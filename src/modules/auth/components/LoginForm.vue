@@ -46,96 +46,39 @@ const handleSubmit = async (): Promise<void> => {
 </script>
 
 <template>
-  <form class="login-form" @submit.prevent="handleSubmit">
-    <div class="login-form__field">
-      <label class="login-form__label" for="email">Email</label>
-      <input id="email" v-model="email" class="login-form__input" type="email" required />
-    </div>
-
-    <div class="login-form__field">
-      <label class="login-form__label" for="password">Password</label>
+  <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-slate-600">Email</label>
       <input
-        id="password"
-        v-model="password"
-        class="login-form__input"
-        type="password"
-        required
+        v-model="email"
+        type="email"
+        placeholder="you@company.com"
+        autocomplete="email"
+        class="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-[13px] text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15"
       />
     </div>
 
-    <p v-if="error" class="login-form__error">
-      {{ error }}
-    </p>
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-slate-600">Password</label>
+      <input
+        v-model="password"
+        type="password"
+        placeholder="••••••••"
+        autocomplete="current-password"
+        class="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-[13px] text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15"
+      />
+    </div>
 
-    <BaseButton class="login-form__submit" type="submit" :loading="isLoading">
-      Sign In
+    <div v-if="error" class="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-600">
+      {{ error }}
+    </div>
+
+    <BaseButton class="h-9 w-full !rounded-lg !bg-blue-500 !px-3 !text-[13px] hover:!bg-blue-600" type="submit" :loading="isLoading">
+      {{ isLoading ? 'Signing in...' : 'Sign in' }}
     </BaseButton>
 
-    <p class="login-form__hint">Use any email and password: password</p>
+    <div class="text-center text-xs text-slate-400">
+      Use any email and password: <strong class="font-medium text-slate-500">password</strong>
+    </div>
   </form>
 </template>
-
-<style scoped>
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: min(100%, 24rem);
-  padding: 2rem;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 1.25rem;
-  box-shadow: 0 20px 45px rgb(15 23 42 / 10%);
-}
-
-.login-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.login-form__label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text, #1e293b);
-}
-
-.login-form__input {
-  min-height: 2.9rem;
-  padding: 0.75rem 0.875rem;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 0.875rem;
-  background: #fff;
-  color: var(--color-text, #1e293b);
-  font: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.login-form__input:focus {
-  outline: none;
-  border-color: var(--color-primary, #3b82f6);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 16%);
-}
-
-.login-form__error {
-  margin: 0;
-  padding: 0.875rem 1rem;
-  border: 1px solid #fecaca;
-  border-radius: 0.875rem;
-  background: #fef2f2;
-  color: #b91c1c;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.login-form__submit {
-  width: 100%;
-}
-
-.login-form__hint {
-  margin: 0;
-  color: var(--color-text-muted, #64748b);
-  font-size: 0.875rem;
-  text-align: center;
-}
-</style>

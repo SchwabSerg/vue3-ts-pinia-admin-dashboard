@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
+import BaseButton from '@/shared/components/ui/BaseButton.vue';
 import { useUiStore } from '@/shared/stores/ui.store';
 
 const route = useRoute();
@@ -22,160 +23,30 @@ const handleLogout = (): void => {
 </script>
 
 <template>
-  <header class="app-header">
-    <div class="app-header__left">
+  <header class="flex h-[52px] shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5">
+    <div class="flex items-center gap-2.5">
       <button
-        class="app-header__menu"
+        class="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500"
         type="button"
         aria-label="Toggle sidebar"
         @click="uiStore.toggleSidebar()"
       >
-        <span />
-        <span />
-        <span />
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M3 5.75A.75.75 0 0 1 3.75 5h12.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 5.75Zm0 4.25a.75.75 0 0 1 .75-.75h12.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 10Zm0 4.25a.75.75 0 0 1 .75-.75h12.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" />
+        </svg>
       </button>
-      <div>
-        <p class="app-header__eyebrow">Overview</p>
-        <h2 class="app-header__title">
-          {{ pageTitle }}
-        </h2>
-      </div>
+      <span class="text-[13px] font-semibold text-slate-900">{{ pageTitle }}</span>
     </div>
 
-    <div class="app-header__right">
-      <div class="app-header__user">
-        <span class="app-header__avatar">
-          {{ userName.charAt(0).toUpperCase() }}
-        </span>
-        <div>
-          <p class="app-header__user-label">Signed in as</p>
-          <p class="app-header__user-name">
-            {{ userName }}
-          </p>
-        </div>
-      </div>
-
-      <button class="app-header__logout" type="button" @click="handleLogout">
-        Logout
+    <div class="flex items-center gap-3">
+      <span class="text-xs text-slate-500">{{ userName }}</span>
+      <button
+        class="h-7 cursor-pointer rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-500"
+        type="button"
+        @click="handleLogout"
+      >
+        Log out
       </button>
     </div>
   </header>
 </template>
-
-<style scoped>
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: 4.75rem;
-  padding: 1rem 1.5rem;
-  background: rgb(248 250 252 / 88%);
-  border-bottom: 1px solid var(--color-border, #e2e8f0);
-  backdrop-filter: blur(12px);
-}
-
-.app-header__left,
-.app-header__right,
-.app-header__user {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.app-header__menu {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.25rem;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 0.875rem;
-  background: var(--color-surface, #fff);
-  cursor: pointer;
-}
-
-.app-header__menu span {
-  width: 1rem;
-  height: 2px;
-  margin: 0 auto;
-  background: var(--color-text, #1e293b);
-  border-radius: 999px;
-}
-
-.app-header__eyebrow,
-.app-header__user-label {
-  margin: 0 0 0.2rem;
-  font-size: 0.75rem;
-  color: var(--color-text-muted, #64748b);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.app-header__title,
-.app-header__user-name {
-  margin: 0;
-  color: var(--color-text, #1e293b);
-}
-
-.app-header__title {
-  font-size: 1.375rem;
-  font-weight: 700;
-}
-
-.app-header__user-name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-}
-
-.app-header__avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 999px;
-  background: #dbeafe;
-  color: var(--color-primary, #3b82f6);
-  font-weight: 700;
-}
-
-.app-header__logout {
-  min-height: 2.5rem;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 0.75rem;
-  background: var(--color-surface, #fff);
-  color: var(--color-text, #1e293b);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.app-header__logout:hover {
-  background: #f8fafc;
-}
-
-@media (min-width: 1024px) {
-  .app-header__menu {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .app-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .app-header__right {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-</style>

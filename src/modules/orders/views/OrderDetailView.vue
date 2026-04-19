@@ -23,12 +23,14 @@ const goBack = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="order-detail-view">
-    <BaseButton variant="ghost" @click="goBack">Back to orders</BaseButton>
+  <div>
+    <button
+      class="mb-4 inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-500"
+      @click="goBack"
+    >← Back to orders</button>
 
-    <div v-if="ordersStore.loading === 'loading'" class="order-detail-view__state">
-      <BaseSpinner size="lg" color="var(--color-primary, #3b82f6)" />
-      <p>Loading order details...</p>
+    <div v-if="ordersStore.loading === 'loading'" class="flex items-center justify-center p-12">
+      <div class="spinner h-6 w-6 rounded-full border-2 border-slate-200 border-t-blue-500"></div>
     </div>
 
     <ErrorMessage
@@ -37,33 +39,17 @@ const goBack = async (): Promise<void> => {
       :retryable="true"
       @retry="ordersStore.fetchOrderById(orderId)"
     />
-    <ErrorMessage
-      v-else-if="ordersStore.currentOrder === null"
-      message="The requested order could not be loaded."
-    />
+
+    <div v-else-if="!ordersStore.currentOrder" class="flex flex-col items-center justify-center gap-2 p-12">
+      <div class="text-[13px] font-medium text-slate-900">Order not found</div>
+      <div class="text-xs text-slate-400">The order you're looking for doesn't exist</div>
+    </div>
 
     <OrderDetailPanel v-else :order="ordersStore.currentOrder" />
   </div>
 </template>
 
 <style scoped>
-.order-detail-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.order-detail-view__state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 18rem;
-  gap: 0.75rem;
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 1rem;
-  color: var(--color-text-muted, #64748b);
-  text-align: center;
-}
+.spinner { animation: spin 0.75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

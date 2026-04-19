@@ -3,6 +3,7 @@ import { computed } from 'vue';
 
 interface Props {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'sm' | 'md';
   loading?: boolean;
   disabled?: boolean;
   type?: 'button' | 'submit';
@@ -10,6 +11,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
+  size: 'md',
   loading: false,
   disabled: false,
   type: 'button',
@@ -20,6 +22,19 @@ const emit = defineEmits<{
 }>();
 
 const isDisabled = computed<boolean>(() => props.loading || props.disabled);
+const sizeClass = computed<string>(() => (props.size === 'sm' ? 'h-8 px-3 text-xs' : 'h-9 px-4'));
+const variantClass = computed<string>(() => {
+  switch (props.variant) {
+    case 'secondary':
+      return 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100';
+    case 'ghost':
+      return 'text-slate-600 hover:bg-slate-100 hover:text-slate-800 active:bg-slate-200';
+    case 'danger':
+      return 'bg-red-500 text-white hover:bg-red-600 active:bg-red-700';
+    default:
+      return 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700';
+  }
+});
 
 const handleClick = (event: MouseEvent): void => {
   emit('click', event);
@@ -28,126 +43,21 @@ const handleClick = (event: MouseEvent): void => {
 
 <template>
   <button
-    class="base-button"
-    :class="[`base-button--${variant}`, { 'base-button--loading': loading }]"
     :type="type"
     :disabled="isDisabled"
+    class="inline-flex cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-[7px] font-medium outline-none transition disabled:cursor-not-allowed disabled:opacity-45"
+    :class="[sizeClass, variantClass]"
     @click="handleClick"
   >
-    <svg
-      v-if="loading"
-      class="base-button__spinner"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <circle class="base-button__spinner-track" cx="12" cy="12" r="9" />
-      <path class="base-button__spinner-head" d="M12 3a9 9 0 0 1 9 9" />
+    <svg v-if="loading" width="13" height="13" viewBox="0 0 13 13" fill="none" class="spinner">
+      <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/>
+      <path d="M6.5 1.5A5 5 0 0 1 11.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
     </svg>
-    <span class="base-button__content">
-      <slot />
-    </span>
+    <slot />
   </button>
 </template>
 
 <style scoped>
-.base-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 2.75rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.75rem;
-  font: inherit;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
-    box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.base-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.base-button:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
-}
-
-.base-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-  transform: none;
-}
-
-.base-button--primary {
-  background: var(--color-primary, #3b82f6);
-  color: #fff;
-}
-
-.base-button--primary:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.base-button--secondary {
-  background: var(--color-surface, #fff);
-  border-color: var(--color-border, #e2e8f0);
-  color: var(--color-text, #1e293b);
-}
-
-.base-button--secondary:hover:not(:disabled) {
-  background: #f8fafc;
-}
-
-.base-button--ghost {
-  background: transparent;
-  color: var(--color-text-muted, #64748b);
-}
-
-.base-button--ghost:hover:not(:disabled) {
-  background: rgb(148 163 184 / 12%);
-  color: var(--color-text, #1e293b);
-}
-
-.base-button--danger {
-  background: #dc2626;
-  color: #fff;
-}
-
-.base-button--danger:hover:not(:disabled) {
-  background: #b91c1c;
-}
-
-.base-button__spinner {
-  width: 1rem;
-  height: 1rem;
-  animation: spin 0.8s linear infinite;
-}
-
-.base-button__spinner-track {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  opacity: 0.25;
-}
-
-.base-button__spinner-head {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.base-button__content {
-  display: inline-flex;
-  align-items: center;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+.spinner { animation: spin 0.75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

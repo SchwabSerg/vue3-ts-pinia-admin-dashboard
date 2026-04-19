@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useUiStore } from '@/shared/stores/ui.store';
@@ -8,147 +7,57 @@ const uiStore = useUiStore();
 const { isSidebarOpen } = storeToRefs(uiStore);
 const { setSidebarOpen } = uiStore;
 
-const sidebarClasses = computed<Record<string, boolean>>(() => ({
-  'app-sidebar--open': isSidebarOpen.value,
-}));
-
 const closeSidebar = (): void => {
   setSidebarOpen(false);
 };
 </script>
 
 <template>
-  <div class="app-sidebar-wrapper" :class="sidebarClasses">
+  <div class="relative w-[220px] shrink-0">
     <button
-      class="app-sidebar-wrapper__overlay"
+      class="fixed inset-0 z-30 bg-slate-900/55 backdrop-blur-[2px] transition-opacity duration-150"
+      :class="isSidebarOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'"
       type="button"
       aria-label="Close sidebar"
       @click="closeSidebar"
     />
-    <aside class="app-sidebar">
-      <div class="app-sidebar__brand">
-        <span class="app-sidebar__logo">OD</span>
-        <div>
-          <p class="app-sidebar__eyebrow">Workspace</p>
-          <h1 class="app-sidebar__title">Order Dashboard</h1>
+    <aside
+      class="fixed inset-y-0 left-0 z-40 flex h-screen w-[220px] shrink-0 flex-col border-r border-white/10 bg-slate-950"
+    >
+      <div class="flex h-[52px] items-center gap-2.5 border-b border-white/10 px-3.5">
+        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-blue-800 text-[11px] font-bold text-blue-200">
+          OD
         </div>
+        <span class="text-[13px] font-semibold text-slate-100">Order Dashboard</span>
       </div>
 
-      <nav class="app-sidebar__nav" aria-label="Main navigation">
-        <RouterLink class="app-sidebar__link" to="/orders" @click="closeSidebar">
-          Orders
+      <nav class="flex-1 p-2" aria-label="Main navigation">
+        <RouterLink v-slot="{ href, navigate, isActive }" to="/orders" custom>
+          <a
+            :href="href"
+            class="mb-px flex h-[34px] items-center gap-[9px] rounded-[7px] px-2.5 text-[13px] no-underline transition-colors duration-150"
+            :class="isActive ? 'bg-white/10 text-slate-100' : 'text-slate-500'"
+            @click="
+              navigate();
+              closeSidebar();
+            "
+          >
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 4h12M2 8h8M2 12h10"/>
+            </svg>
+            Orders
+          </a>
         </RouterLink>
       </nav>
+
+      <div class="border-t border-white/10 p-2.5">
+        <div class="flex items-center gap-2 px-2 py-1.5">
+          <div class="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-sky-950 text-[10px] font-semibold text-blue-200">
+            OD
+          </div>
+          <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-slate-400">Operations</span>
+        </div>
+      </div>
     </aside>
   </div>
 </template>
-
-<style scoped>
-.app-sidebar-wrapper {
-  position: relative;
-}
-
-.app-sidebar-wrapper__overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 29;
-  border: 0;
-  background: rgb(15 23 42 / 48%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.app-sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  width: 17.5rem;
-  padding: 1.5rem 1rem;
-  background: var(--color-sidebar-bg, #1e293b);
-  color: var(--color-sidebar-text, #94a3b8);
-  transform: translateX(-100%);
-  transition: transform 0.22s ease;
-}
-
-.app-sidebar__brand {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 0.5rem;
-}
-
-.app-sidebar__logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.875rem;
-  background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
-  color: #fff;
-  font-weight: 800;
-}
-
-.app-sidebar__eyebrow {
-  margin: 0 0 0.25rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.app-sidebar__title {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--color-sidebar-active, #fff);
-}
-
-.app-sidebar__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.app-sidebar__link {
-  display: flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0.75rem 0.875rem;
-  border-radius: 0.875rem;
-  color: inherit;
-  text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.app-sidebar__link:hover {
-  background: rgb(148 163 184 / 12%);
-  color: var(--color-sidebar-active, #fff);
-}
-
-.app-sidebar__link.router-link-active {
-  background: rgb(255 255 255 / 10%);
-  color: var(--color-sidebar-active, #fff);
-}
-
-.app-sidebar--open .app-sidebar-wrapper__overlay {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.app-sidebar--open .app-sidebar {
-  transform: translateX(0);
-}
-
-@media (min-width: 1024px) {
-  .app-sidebar-wrapper__overlay {
-    display: none;
-  }
-
-  .app-sidebar {
-    transform: translateX(0);
-  }
-}
-</style>
