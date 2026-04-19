@@ -6,7 +6,7 @@ interface LoginRequestBody {
 }
 
 export const authHandlers = [
-  http.post('/api/auth/login', async ({ request }) => {
+  http.post('*/api/auth/login', async ({ request }) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 400));
 
     const body = (await request.json()) as LoginRequestBody;
@@ -24,7 +24,7 @@ export const authHandlers = [
       token: 'fake-jwt-token',
     });
   }),
-  http.post('/api/auth/logout', async () => {
+  http.post('*/api/auth/logout', async () => {
     await new Promise<void>((resolve) => setTimeout(resolve, 200));
 
     return HttpResponse.json({ success: true });

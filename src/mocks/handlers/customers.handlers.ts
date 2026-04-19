@@ -12,7 +12,7 @@ const toPaginatedResponse = <T>(items: T[]): PaginatedResponse<T> => ({
 });
 
 export const customersHandlers = [
-  http.get('/api/customers/:id', async ({ params }) => {
+  http.get('*/api/customers/:id', async ({ params }) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 200));
 
     const customer = mockCustomers.find((entry: MockCustomer): boolean => entry.id === params.id);
@@ -23,7 +23,7 @@ export const customersHandlers = [
 
     return HttpResponse.json(customer);
   }),
-  http.get('/api/customers/:id/orders', async ({ params }) => {
+  http.get('*/api/customers/:id/orders', async ({ params }) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 300));
 
     const customerOrders = mockOrders.filter(

@@ -6,10 +6,6 @@ import {
 } from 'vue-router';
 import { defineComponent, h } from 'vue';
 
-const LoginPage = defineComponent({
-  render: () => h('div', 'Page placeholder'),
-});
-
 const OrdersPage = defineComponent({
   render: () => h('div', 'Page placeholder'),
 });
@@ -26,7 +22,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    component: LoginPage,
+    component: () => import('@/modules/auth/views/LoginView.vue'),
     meta: {
       requiresAuth: false,
       title: 'Login',

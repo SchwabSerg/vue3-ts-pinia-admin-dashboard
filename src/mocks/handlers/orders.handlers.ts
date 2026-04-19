@@ -24,7 +24,7 @@ const paginate = <T>(items: T[], page: number, perPage: number): PaginatedRespon
 };
 
 export const ordersHandlers = [
-  http.get('/api/orders', async ({ request }) => {
+  http.get('*/api/orders', async ({ request }) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 300));
 
     const url = new URL(request.url);
@@ -45,7 +45,7 @@ export const ordersHandlers = [
 
     return HttpResponse.json(paginate(filteredOrders, page, perPage));
   }),
-  http.get('/api/orders/:id', async ({ params }) => {
+  http.get('*/api/orders/:id', async ({ params }) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 200));
 
     const order = orders.find((entry: MockOrder): boolean => entry.id === params.id);
@@ -56,7 +56,7 @@ export const ordersHandlers = [
 
     return HttpResponse.json(order);
   }),
-  http.patch('/api/orders/:id/status', async ({ params, request }) => {
+  http.patch('*/api/orders/:id/status', async ({ params, request }) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 300));
 
     const body = (await request.json()) as OrderStatusRequestBody;
