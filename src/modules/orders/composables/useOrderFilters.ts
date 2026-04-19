@@ -40,8 +40,8 @@ export const useOrderFilters = (): UseOrderFiltersResult => {
 
     search.value = initialSearch;
     statusFilter.value = initialStatus;
-    ordersStore.filters.value = {
-      ...ordersStore.filters.value,
+    ordersStore.filters = {
+      ...ordersStore.filters,
       search: initialSearch,
       status: initialStatus,
       page: 1,

@@ -2,6 +2,8 @@
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BaseButton from '@/shared/components/ui/BaseButton.vue';
+import ErrorMessage from '@/shared/components/feedback/ErrorMessage.vue';
+import BaseSpinner from '@/shared/components/ui/BaseSpinner.vue';
 import OrderDetailPanel from '@/modules/orders/components/OrderDetailPanel.vue';
 import { useOrdersStore } from '@/modules/orders/store/orders.store';
 
@@ -25,14 +27,20 @@ const goBack = async (): Promise<void> => {
     <BaseButton variant="ghost" @click="goBack">Back to orders</BaseButton>
 
     <div v-if="ordersStore.loading === 'loading'" class="order-detail-view__state">
-      <div class="order-detail-view__spinner" />
+      <BaseSpinner size="lg" color="var(--color-primary, #3b82f6)" />
       <p>Loading order details...</p>
     </div>
 
-    <div v-else-if="ordersStore.currentOrder === null" class="order-detail-view__state">
-      <h2>Order not found</h2>
-      <p>The requested order could not be loaded.</p>
-    </div>
+    <ErrorMessage
+      v-else-if="ordersStore.loading === 'error' && ordersStore.error"
+      :message="ordersStore.error.message"
+      :retryable="true"
+      @retry="ordersStore.fetchOrderById(orderId)"
+    />
+    <ErrorMessage
+      v-else-if="ordersStore.currentOrder === null"
+      message="The requested order could not be loaded."
+    />
 
     <OrderDetailPanel v-else :order="ordersStore.currentOrder" />
   </div>
@@ -57,20 +65,5 @@ const goBack = async (): Promise<void> => {
   border-radius: 1rem;
   color: var(--color-text-muted, #64748b);
   text-align: center;
-}
-
-.order-detail-view__spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 3px solid #dbeafe;
-  border-top-color: var(--color-primary, #3b82f6);
-  border-radius: 999px;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style>

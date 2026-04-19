@@ -3,6 +3,8 @@ import { onMounted } from 'vue';
 import OrderFilters from '@/modules/orders/components/OrderFilters.vue';
 import OrdersTable from '@/modules/orders/components/OrdersTable.vue';
 import { useOrdersStore } from '@/modules/orders/store/orders.store';
+import EmptyState from '@/shared/components/feedback/EmptyState.vue';
+import ErrorMessage from '@/shared/components/feedback/ErrorMessage.vue';
 
 const ordersStore = useOrdersStore();
 
@@ -26,7 +28,19 @@ const handleSort = async (field: string): Promise<void> => {
 <template>
   <div class="orders-view">
     <OrderFilters />
+    <ErrorMessage
+      v-if="ordersStore.loading === 'error' && ordersStore.error"
+      :message="ordersStore.error.message"
+      :retryable="true"
+      @retry="ordersStore.fetchOrders"
+    />
+    <EmptyState
+      v-else-if="ordersStore.loading === 'success' && ordersStore.orders.length === 0"
+      title="No orders found"
+      description="Try adjusting your search or status filters."
+    />
     <OrdersTable
+      v-else
       :orders="ordersStore.orders"
       :loading="ordersStore.loading"
       :total="ordersStore.total"

@@ -3,6 +3,8 @@ import { computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BaseBadge from '@/shared/components/ui/BaseBadge.vue';
 import BaseButton from '@/shared/components/ui/BaseButton.vue';
+import ErrorMessage from '@/shared/components/feedback/ErrorMessage.vue';
+import BaseSpinner from '@/shared/components/ui/BaseSpinner.vue';
 import { formatDate } from '@/shared/utils/formatDate';
 import CustomerOrdersList from '@/modules/customers/components/CustomerOrdersList.vue';
 import { useCustomersStore } from '@/modules/customers/store/customers.store';
@@ -28,6 +30,13 @@ const goBack = async (): Promise<void> => {
   await router.push({ name: 'orders' });
 };
 
+const retryLoad = async (): Promise<void> => {
+  await Promise.all([
+    customersStore.fetchCustomer(customerId.value),
+    customersStore.fetchCustomerOrders(customerId.value),
+  ]);
+};
+
 const statusVariant = computed<'success' | 'danger'>(() =>
   customersStore.currentCustomer?.status === 'active' ? 'success' : 'danger',
 );
@@ -47,13 +56,16 @@ const totalSpentFormatted = computed<string>(() => {
     <BaseButton variant="ghost" @click="goBack">Back to orders</BaseButton>
 
     <div v-if="customersStore.loading === 'loading'" class="customer-view__state">
-      <div class="customer-view__spinner" />
+      <BaseSpinner size="lg" color="var(--color-primary, #3b82f6)" />
       <p>Loading customer details...</p>
     </div>
 
-    <div v-else-if="customersStore.error" class="customer-view__state">
-      <h2>Customer not found</h2>
-      <p>The requested customer could not be loaded.</p>
+    <div v-else-if="customersStore.error" class="customer-view__error">
+      <ErrorMessage
+        :message="customersStore.error.message"
+        :retryable="true"
+        @retry="retryLoad"
+      />
       <BaseButton variant="secondary" @click="goBack">Back</BaseButton>
     </div>
 
@@ -127,13 +139,10 @@ const totalSpentFormatted = computed<string>(() => {
   text-align: center;
 }
 
-.customer-view__spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 3px solid #dbeafe;
-  border-top-color: var(--color-primary, #3b82f6);
-  border-radius: 999px;
-  animation: spin 0.8s linear infinite;
+.customer-view__error {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .customer-view__card {
@@ -185,12 +194,6 @@ const totalSpentFormatted = computed<string>(() => {
   margin: 0;
   color: var(--color-text, #1e293b);
   font-weight: 600;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 768px) {
