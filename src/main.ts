@@ -1,11 +1,12 @@
 import { createApp } from 'vue';
 import '@/assets/main.css';
 import App from '@/App.vue';
+import { env, isDev } from '@/app/config/env';
 import { pinia } from '@/app/providers/pinia';
 import { router } from '@/app/providers/router';
 import { registerGuards } from '@/app/router/guards';
 
-if (import.meta.env.DEV) {
+if (isDev || env.enableMsw) {
   if ('serviceWorker' in navigator) {
     const registrations = await navigator.serviceWorker.getRegistrations();
 
