@@ -6,10 +6,6 @@ import {
 } from 'vue-router';
 import { defineComponent, h } from 'vue';
 
-const OrdersPage = defineComponent({
-  render: () => h('div', 'Page placeholder'),
-});
-
 const CustomersPage = defineComponent({
   render: () => h('div', 'Page placeholder'),
 });
@@ -31,10 +27,19 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/orders',
     name: 'orders',
-    component: OrdersPage,
+    component: () => import('@/modules/orders/views/OrdersView.vue'),
     meta: {
       requiresAuth: true,
       title: 'Orders',
+    },
+  },
+  {
+    path: '/orders/:id',
+    name: 'order-detail',
+    component: () => import('@/modules/orders/views/OrderDetailView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Order Details',
     },
   },
   {
