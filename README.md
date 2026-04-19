@@ -38,6 +38,20 @@ npm install
 npm run dev
 ```
 
+Create a local env file from the example before starting development:
+
+```bash
+cp .env.local.example .env.local
+```
+
+## Environment Files
+
+- `.env.local.example` — example template for local development values
+- `.env.production.example` — example template for production build values
+- `.env.local` — real local file for your machine, not committed to git
+
+Only example env files are committed. Real env files are kept out of git and should be provided locally or via hosting platform environment variables.
+
 ## Architectural Decisions
 
 - Feature modules keep domain code, API access, state, and UI close together instead of spreading concerns by file type only.
