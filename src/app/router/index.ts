@@ -4,11 +4,6 @@ import {
   type RouteRecordRaw,
   type Router,
 } from 'vue-router';
-import { defineComponent, h } from 'vue';
-
-const CustomersPage = defineComponent({
-  render: () => h('div', 'Page placeholder'),
-});
 
 const routes: RouteRecordRaw[] = [
   {
@@ -44,11 +39,15 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/customers',
-    name: 'customers',
-    component: CustomersPage,
+    redirect: { name: 'orders' },
+  },
+  {
+    path: '/customers/:id',
+    name: 'customer-detail',
+    component: () => import('@/modules/customers/views/CustomerView.vue'),
     meta: {
       requiresAuth: true,
-      title: 'Customers',
+      title: 'Customer Details',
     },
   },
 ];

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, type Ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import BaseBadge from '@/shared/components/ui/BaseBadge.vue';
 import BaseButton from '@/shared/components/ui/BaseButton.vue';
 import { formatDateTime } from '@/shared/utils/formatDate';
@@ -72,7 +73,14 @@ const handleStatusChange = async (status: OrderStatus): Promise<void> => {
         <dl>
           <div>
             <dt>Name</dt>
-            <dd>{{ order.customer.name }}</dd>
+            <dd>
+              <RouterLink
+                class="order-detail-panel__customer-link"
+                :to="`/customers/${order.customer.id}`"
+              >
+                {{ order.customer.name }}
+              </RouterLink>
+            </dd>
           </div>
           <div>
             <dt>Email</dt>
@@ -207,6 +215,15 @@ const handleStatusChange = async (status: OrderStatus): Promise<void> => {
 .order-detail-panel__muted {
   margin: 0;
   color: var(--color-text-muted, #64748b);
+}
+
+.order-detail-panel__customer-link {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+}
+
+.order-detail-panel__customer-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 900px) {

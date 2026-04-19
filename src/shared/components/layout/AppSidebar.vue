@@ -38,9 +38,6 @@ const closeSidebar = (): void => {
         <RouterLink class="app-sidebar__link" to="/orders" @click="closeSidebar">
           Orders
         </RouterLink>
-        <RouterLink class="app-sidebar__link" to="/customers" @click="closeSidebar">
-          Customers
-        </RouterLink>
       </nav>
     </aside>
   </div>
