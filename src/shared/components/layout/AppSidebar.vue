@@ -38,7 +38,7 @@ const closeSidebar = (): void => {
             class="mb-px flex h-[34px] items-center gap-[9px] rounded-[7px] px-2.5 text-[13px] no-underline transition-colors duration-150"
             :class="isActive ? 'bg-white/10 text-slate-100' : 'text-slate-500'"
             @click="
-              navigate();
+              navigate($event);
               closeSidebar();
             "
           >
