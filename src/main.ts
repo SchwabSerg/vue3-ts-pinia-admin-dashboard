@@ -5,18 +5,22 @@ import { pinia } from '@/app/providers/pinia';
 import { router } from '@/app/providers/router';
 import { registerGuards } from '@/app/router/guards';
 
-registerGuards(router);
+async function bootstrap(): Promise<void> {
+  if (import.meta.env.DEV || import.meta.env.VITE_ENABLE_MSW === 'true') {
+    const { worker } = await import('./mocks/browser')
+    await worker.start({
+      onUnhandledRequest: 'bypass',
+      serviceWorker: { url: '/mockServiceWorker.js' },
+    })
+  }
 
-const app = createApp(App);
-app.use(pinia);
-app.use(router);
+  registerGuards(router)
 
-if (import.meta.env.DEV || import.meta.env.VITE_ENABLE_MSW === 'true') {
-  import('./mocks/browser').then(({ worker }) => {
-    worker.start({ onUnhandledRequest: 'bypass' }).catch(console.warn);
-  }).catch(console.warn);
+  const app = createApp(App)
+  app.use(pinia)
+  app.use(router)
+  await router.isReady()
+  app.mount('#app')
 }
 
-router.isReady().then(() => {
-  app.mount('#app');
-}).catch(console.warn);
+bootstrap().catch(console.error)
