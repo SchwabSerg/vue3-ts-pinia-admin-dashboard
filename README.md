@@ -1,3 +1,9 @@
+## Live Demo
+
+[vue3-ts-pinia-admin-dashboard.vercel.app](https://vue3-ts-pinia-admin-dashboard.vercel.app)
+
+Login with any email and password: `password`
+
 # Order Dashboard
 
 [![CI](https://github.com/your-org/order-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/order-dashboard/actions/workflows/ci.yml)
